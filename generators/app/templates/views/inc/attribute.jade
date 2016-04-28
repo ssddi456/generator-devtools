@@ -1,0 +1,19 @@
+.editor-wrap(cg-busy='widgetTabs.loading.promise')
+  .tabset-wrap(perfect-scrollbar='')
+    tabset.tabset.tabset-closable(ng-style="{'width': 104 * widgetTabs.getCount()}")
+      tab(ng-repeat='(id, tab) in widgetTabs.map', active='tab.active', select='widgetTabs.onSelect(id)', ng-click='widgetTabs.onClick(id)')
+        tab-heading
+          .title(title='{{tab.title}}') {{tab.title}}
+          a.tab-close.glyphicon.glyphicon-remove(ng-click='widgetTabs.remove(id, $event)')
+  ul.editor-list
+    li.editor(ng-repeat='(id, tab) in widgetTabs.map', ng-show='tab.active', ui-codemirror='tab.cmOptions')
+  .menu
+    .btn-list(ng-show='widgetTabs.getCount()')
+      a.btn(tooltip='查找', ng-click='widgetTabs.find()')
+        span.glyphicon.glyphicon-search
+      a.btn(tooltip='保存', ng-click='widgetTabs.save()')
+        span.glyphicon.glyphicon-floppy-disk
+    .btn-list.right
+      a.toggle-preview(ng-click='widgetPreviewer.toggle()')
+        span.glyphicon.glyphicon-phone
+

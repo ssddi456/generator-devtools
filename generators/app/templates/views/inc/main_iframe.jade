@@ -1,0 +1,19 @@
+.side-tool
+  .side-tool-container
+    .top-tools
+      .previewer-size
+        input(type='text', 
+              data-bind='value:widgetPreviewer.width')
+        span.sign x
+        input(type='text', 
+              data-bind='value:widgetPreviewer.height')
+      .btn-list
+        a(href='#', 
+          onclick='window["previewer-iframe"].reload();')
+          span.glyphicon.glyphicon-refresh
+    .previewer
+      iframe#previewer-iframe(scroll-on-drag='', 
+              data-bind='attr:{src:widgetPreviewer.src}', 
+              frameborder='0')
+    .bottom-tools.btn-list
+      a.btn 底部按钮

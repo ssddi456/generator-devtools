@@ -1,0 +1,35 @@
+include ./mixins.jade
+
+
+
+
+script#folder-template(type='text/html')
+  ul.jstree-children(data-bind="foreach: nodes")
+    +ko("template: { name: 'node-template', data: $data }")
+
+script#node-template(type='text/html')
+  li.jstree-node(data-bind="css: {\
+                              'jstree-open': isExpanded() && nodes().length > 0,\
+                              'jstree-closed': !isExpanded() && nodes().length > 0,\
+                              'jstree-leaf': nodes().length === 0,\
+                              'jstree-last': !$parents[1] || ($parents[1].nodes && $parents[1].nodes().slice(-1)[0] == $data)\
+                            }")
+    i.jstree-icon.jstree-ocl(data-bind="click: toggleVisibility")
+    +ko('if: nodes().length')
+      span.jstree-node-name(data-bind="text: name, \
+                      attr: { 'title': description },\
+                      click: toggleVisibility")
+    +ko('if: nodes().length')
+      span.jstree-node-name(data-bind="text: name, \
+                      attr: { 'title': description },\
+                      click: showContent")
+    +ko('if: nodes().length !== 0 && isExpanded() ')
+      +ko("template: { name: 'folder-template', data: $data }")
+
+
+.file-tree-wrap
+  .file-tree-container
+    .heading 文件目录
+    .jstree-default.file-tree(data-bind='')
+      ul.jstree-container-ul(data-bind='template:{name : "node-template", data :widgetTree.treeData}')
+
