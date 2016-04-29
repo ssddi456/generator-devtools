@@ -17,12 +17,12 @@ script#node-template(type='text/html')
     i.jstree-icon.jstree-ocl(data-bind="click: toggleVisibility")
     +ko('if: nodes().length')
       span.jstree-node-name(data-bind="text: name, \
-                      attr: { 'title': description },\
-                      click: toggleVisibility")
-    +ko('if: nodes().length')
+                                      attr: { 'title': description },\
+                                      click: toggleVisibility")
+    +ko('if: !nodes().length')
       span.jstree-node-name(data-bind="text: name, \
-                      attr: { 'title': description },\
-                      click: showContent")
+                                        attr: { 'title': description },\
+                                        click: showContent")
     +ko('if: nodes().length !== 0 && isExpanded() ')
       +ko("template: { name: 'folder-template', data: $data }")
 

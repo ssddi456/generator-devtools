@@ -1,9 +1,11 @@
 require([
   'knockout',
+  './widgetConfig',
   './widgetTree',
   './widgetPreviewer'
 ],function(
   ko,
+  widgetConfig,
   widgetTree,
   widgetPreviewer
 ){
@@ -12,6 +14,7 @@ require([
   var vm = {
     widgetPreviewer : widgetPreviewer,
     widgetTree : widgetTree,
+    widgetConfig : widgetConfig
   };
 
 
