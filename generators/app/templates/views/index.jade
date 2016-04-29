@@ -9,15 +9,14 @@ html(lang="en")
     link(rel='stylesheet', href='/stylesheets/jstree.css')
 
   body
-    
-
-    .row.main-wrapper
-      .col-sm-3
-        include ./inc/file_tree.jade
-      .col-sm-6
-        include ./inc/main_iframe.jade
-      .col-sm-3
-        include ./inc/attribute.jade
+    .main-wrapper.container-fluid
+      .row
+        .col-sm-3
+          include ./inc/file_tree.jade
+        .col-sm-6
+          include ./inc/main_iframe.jade
+        .col-sm-3
+          include ./inc/attribute.jade
   
     script(src="/javascripts/livereload.js")
     script(type="text/javascript", src="//cdn.staticfile.org/d3/3.4.13/d3.js")
@@ -29,7 +28,7 @@ html(lang="en")
           'knockout' : '//cdn.staticfile.org/knockout/3.2.0/knockout-min',
           'ko' : '//cdn.staticfile.org/knockout/3.2.0/knockout-min',
           'json' : './libs/require-json',
-          '_' : '//cdn.staticfile.org/underscore.js/1.7.0/underscore'
+          'underscore' : '//cdn.staticfile.org/underscore.js/1.7.0/underscore'
         }
       });
     script(type="text/javascript", src="//cdn.staticfile.org/jquery/1.11.1/jquery.js")

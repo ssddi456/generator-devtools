@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-process.env.DEBUG = '*';
+process.env.DEBUG = '*,-send';
 
 var app = require('../app');
 var debug = require('debug')('templates:server');
@@ -82,27 +82,11 @@ function onError(error) {
 /**
  * Event listener for HTTP server "listening" event.
  */
-
-var liveServer = require('live-server');
+var livereload_server_instance = require('./livereload_server_instance');
 function onListening() {
   var addr = server.address();
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
-
-  try{
-    liveServer.start({
-      port: 35729, // Set the server port. Defaults to 8080.
-      host: "localhost", // Set the address to bind to. Defaults to 0.0.0.0 or process.env.IP.
-      root: path.join(__dirname, '../'), // Set root directory that's being server. Defaults to cwd.
-      open: false, // When false, it won't load your browser by default.
-      ignore: 'bin,app.js,package.json,routes', // comma-separated string for paths to ignore
-      wait: 300, // Waits for all changes, before reloading. Defaults to 0 sec.
-      // mount: [['/components', ]], // Mount a directory to a route.
-      logLevel: 2 // 0 = errors only, 1 = some, 2 = lots
-    });
-  } catch(e){
-    debug(e);
-  }
 }
