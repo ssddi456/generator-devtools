@@ -43,5 +43,5 @@ script#node-template(type='text/html')
     .heading 文件目录
     .jstree-default.file-tree(data-bind='')
       +ko('if : widgetTree.treeData ')
-        ul.jstree-container-ul(data-bind='template:{name : "node-template", data :widgetTree.treeData}')
+        ul.jstree-container-ul(data-bind='template:{name : "folder-template", data :widgetTree.treeData}')
 

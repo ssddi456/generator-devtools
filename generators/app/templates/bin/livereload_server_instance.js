@@ -8,13 +8,16 @@ if( debug_name == 'index'){
 })()
 var debug = require('debug')(debug_name);
 
+var domain = require('domain');
 
 var LRWebSocketServer = require('livereload-server');
 var _ = require('underscore');
 
+var server;
+
 // id, name, version identifies your app;
 // protocols specifies the versions of subprotocols you support
-var server = new LRWebSocketServer({ 
+server = new LRWebSocketServer({ 
   id: "com.example.acme", 
   name: "Acme", 
   version: "1.0", 
@@ -57,6 +60,7 @@ server.broadcast = function( obj ) {
   });
 };
 
+    
 server.listen(function(err) {
   if (err) {
       console.error("Listening failed: %s", err.message);
@@ -64,6 +68,5 @@ server.listen(function(err) {
   }
   debug("livereload Listening on " + server.port);
 });
-
 
 module.exports = server;

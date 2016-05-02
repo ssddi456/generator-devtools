@@ -9,7 +9,7 @@ define([
   var vm = {
     width : ko.observable('100%'),
     height : ko.observable('480'),
-    src : ko.observable(''),
+    src : ko.observable('')
   };
 
 

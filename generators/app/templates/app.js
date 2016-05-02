@@ -9,6 +9,8 @@ var routes = require('./routes/index');
 
 var app = express();
 
+app.set('env', 'development');
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -40,12 +42,13 @@ if (app.get('env') === 'development') {
     if( req.xhr ){
       res.json({
         err : err.status,
-        message : error.message,
-        stack : error.stack
+        message : err.message,
+        stack : err.stack
       })
     } else {
       res.render('error', {
         message: err.message,
+        stack : err.stack,
         error: err
       });
     }
@@ -59,7 +62,7 @@ app.use(function(err, req, res, next) {
   if( req.xhr ){
     res.json({
       err : err.status,
-      message : error.message
+      message : err.message
     });
   } else {
     res.render('error', {

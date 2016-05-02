@@ -11,7 +11,7 @@ include ./mixins.jade
               data-bind='value:widgetPreviewer.height')
       .btn-list
         a(href='#', 
-          onclick='window["previewer-iframe"].getAttribute("src") && window["previewer-iframe"].src = window["previewer-iframe"].src')
+          onclick='window["previewer-iframe"].getAttribute("src") && (window["previewer-iframe"].src = window["previewer-iframe"].src)')
           span.glyphicon.glyphicon-refresh
     .previewer
       +ko('if : widgetPreviewer.src')

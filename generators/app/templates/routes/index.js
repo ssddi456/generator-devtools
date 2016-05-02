@@ -7,6 +7,7 @@ if( debug_name == 'index'){
     process.env.DEBUG = '*';
 })()
 var debug = require('debug')(debug_name);
+var _ = require('underscore');
 
 var express = require('express');
 var router = express.Router();
@@ -27,7 +28,10 @@ var fsExtra = require('fs-extra');
 var async = require('async');
 
 
-var watch_pathes = [ route_relative('public'), route_relative('views') ];
+// var watch_pathes = [ route_relative('public'), route_relative('views') ];
+var fisKernel = require('fis-kernel');
+var watch_pathes = [ 'D:\\temp' ];
+var dest_pathes = [ path.normalize(fisKernel.project.getTempPath('www')) ];
 
 var visitable_map = [
   '.jpg',
@@ -40,20 +44,31 @@ var visitable_map = [
   '.json'
 ];
 
-var href_map = {
-  'D:\\gitchunk\\generator-devtools\\generators\\app\\templates\\views\\index.jade' : '/'
-};
+var href_map = {};
+
 
 router.get('/tree',function(req, resp, next) {
-  var type = req.params.type;
+  var type = req.query.type;
   var items = []; // files, directories, symlinks, etc
 
-  async.each(watch_pathes, function( root, done ) {
+  var roots;
+  if( type == 'source' ){
+    roots = watch_pathes;
+  } else {
+    roots = dest_pathes;
+  }
+
+  async.each(roots, function( root, done ) {
+    fisKernel.project.setProjectRoot(root);
 
     fsExtra.walk( root )
       .on('data', function (item) {
-        var ext = path.extname(item.path);
-        var visitable = visitable_map.indexOf(ext) == -1;
+
+        try{
+          var fis_node = fis.file(item.path);
+        } catch(e){
+          var fis_node = {};
+        }
 
         items.push({
           name : path.basename(item.path),
@@ -68,9 +83,11 @@ router.get('/tree',function(req, resp, next) {
 
           type : item.stats.isFile() ? 'file' : 'folder',
           directory : path.dirname(item.path),
+
+          href : fis_node.url,
           root : root,
-          href : href_map[item.path] || (!visitable && path.relative(root, item.path)),
-          unvisitable : visitable,
+
+          data : fis_node
         });
 
       })
@@ -80,23 +97,132 @@ router.get('/tree',function(req, resp, next) {
     resp.json({ 
       err : 0, 
       items : items,
-      roots : watch_pathes
+      roots : roots
     });
   })
 
 });
 
-router.get('/detail',function( req, resp, next ) {
-  var description =  req.params.description;
+router.get('/node_source', function( req, resp, next ) {
+  var node_path = req.query.node_path;
+  var root = req.query.root;
+
+  debug(node_path, root);
+
+  try{
+    fisKernel.project.setProjectRoot(root);
+    var fis_node = fis.file(node_path);
+  }catch(e){
+    return next(e);
+  }
+
+  debug( 'fis_node', fis_node );
+
+  fsExtra.readFile( fis_node.realpath, 'utf8', function(err, code) {
+    debug(arguments);
+
+    if(err){
+      return next(err);
+    }
+    if( fis_node._isText ){
+      resp.set('Content-Type', 'text/plain');
+    } else {
+      resp.set('Content-Type', fisKernel.util.getMimeType( fis_node.rExt ));
+    }
+
+
+    resp.send(code);
+    resp.end();
+  });
+});
+
+router.get('/node_dest', function( req, resp, next ) {
+  var node_path = req.query.node_path;
+  var root = req.query.root;
+
+  try{
+
+    fisKernel.project.setProjectRoot(root);
+
+    var fis_node = fis.file(node_path);
+    var cache_root = fis.compile.setup();
+
+    var cache_node = fis.cache(node_path, cache_root);
+    cache_node.revert(fis_node);
+
+  }catch(e){
+    return next(e);
+  }
+
+
+  if( fis_node._isText ){
+    resp.set('Content-Type', 'text/plain');
+  } else {
+    resp.set('Content-Type', fisKernel.util.getMimeType( fis_node.rExt ));
+  }
+
+  resp.send(fis_node.getContent());
+  resp.end();
+});
+
+router.get('/node_conf', function(  req, resp, next ) {
+  var node_path = req.query.node_path;
+  var root = req.query.root;
+
+  var conf = {};
+
+  try{
+
+    fisKernel.project.setProjectRoot(root);
+    var fis_node = fis.file(node_path);
+    var cache_root = fis.compile.setup();
+
+    var cache_node = fis.cache(node_path, cache_root);
+    cache_node.revert(fis_node);
+    fis_node.requires = fis_node.info.requires;
+    fis_node.extras = fis_node.info.extras;
+
+  }catch(e){
+    return next(e);
+  }
+
 
   resp.json({
     err : 0,
-    detail : {}
+    conf: fis_node
   });
-
 });
 
+router.get('/recompile', function( req, resp, next ) {
+  compile(function(e) {
+    if(e){
+      return next(e);
+    } else {
+      resp.json({
+        err: 0
+      });
+    }
+  })
+});
 
+var child_process = require('child_process');
+
+function compile ( done ) {
+  async.each(watch_pathes,function( path, done ) {
+    var cp = child_process.spawn('fis.cmd', ['release'], { cwd : path });
+    cp.on('error',function( e ) {
+      if(e){
+        debug(e);
+      }
+    });
+
+    cp.on('exit', function( code ) {
+      done && done( code );
+    });
+  }, done);
+}
+
+compile();
 
 var watchr = require('watchr');
 watchr.watch({
@@ -120,16 +246,19 @@ watchr.watch({
         },
         change: function(changeType, filePath, fileCurrentStat, filePreviousStat){
           debug('a change event occured:', changeType, filePath);
-          if( changeType == 'update' ){
 
-            if( filePath.indexOf( view_root ) == 0 ){
-              debug('template change ');
-              reload( filePath );
-            } else {
-              debug('static file change');
-              reload( '/' + path.relative(static_root, filePath).replace(/\\/g, '/') );
+          compile(function() {
+            // here need some tree updates
+            if( changeType == 'update' ){
+              if( filePath.indexOf( view_root ) == 0 ){
+                debug('template change ');
+                reload( filePath );
+              } else {
+                debug('static file change');
+                reload( '/' + path.relative(static_root, filePath).replace(/\\/g, '/') );
+              }
             }
-          }
+          });
         }
     },
     next: function(err,watchers){

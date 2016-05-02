@@ -1,12 +1,18 @@
 define([
+  './widgetConfig',
   './widgetPreviewer',
   'underscore',
   'knockout'
 ],function(
+  widgetConfig,
   widgetPreviewer,
   __,
   ko
 ){
+
+
+  var node_detail_url = '/node_source';
+
   var NodeModel = function(data) {
   
     var self = this;
@@ -15,25 +21,31 @@ define([
     self.description = ko.observable( data.description );
     self.name = ko.observable( data.name );
 
+    self.type = data.type;
+    self.root = data.root;
     self.href = data.href;
-    self.unvisitable = data.unvisitable;
 
     self.toggleVisibility = function(vm, e) {
       e.stopPropagation();
       this.isExpanded(!this.isExpanded());
     };
 
-    self.showContent =function(vm, e) {
+    self.showContent =function(_vm, e) {
       e.stopPropagation();
+      if( self.type == 'directory' ){
+        return;
+      }
+
       if( self.href ){
         var path = self.href;
-      } else if( self.unvisitable ){
-        return;
+        var path = 'http://' + location.host + vm.node_detail_url + '?' + $.param({ node_path : self.description(), root : self.root });
       } else {
-
         // here fire change view events;
-        // 
-        var path = 'http://' + location.host + '/' + vm.description().replace(/\\/g,'/');
+        var path = 'http://' + location.host + vm.node_detail_url + '?' + $.param({ node_path : self.description(), root : self.root });
+      }
+
+      if( vm.active_tab_name == 'source' ){
+        widgetConfig.node(_vm);
       }
 
       widgetPreviewer.src(path);
@@ -53,6 +65,8 @@ define([
 
   var vm = {
     treeData : ko.observable(),
+    node_detail_url : '/node_source',
+    active_tab_name : 'source',
     tabs : ko.observableArray([new tab({ name : 'source', selected : true }), new tab({ name : 'dest'})]),
     select: function( _vm ) {
       if( _vm.selected() ){
@@ -60,6 +74,9 @@ define([
       }
 
       sync_file_tree(_vm.name());
+
+      vm.node_detail_url = '/node_' + _vm.name();
+      vm.active_tab_name = _vm.name();
 
       vm.tabs().forEach(function( _vm ) {
         _vm.selected( false );

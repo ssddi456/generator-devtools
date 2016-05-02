@@ -1,5 +1,31 @@
+.main-wrapper{
+    position: absolute;
+    top:0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+.main-wrapper>.row{
+    height: 100%;
+}
+
+.col-parts-wrapper{
+    position: relative;
+    height: 100%;
+}
+
+.col-parts{
+    position: absolute;
+    top:0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    overflow: auto;
+}
+
 .file-tree-wrap{
-  height: 100%;
+  /*height: 100%;*/
   background: #fff;
 }
 .file-tree-container{
@@ -9,14 +35,8 @@
   font-size: 12px;
 }
 
-
-
-
 .side-tool {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
+
     padding: 10px;
     min-height: 600px;
     background: #fff;
@@ -63,7 +83,7 @@
 .previewer-size input {
     padding-right: 8px;
     padding-left: 8px;
-    width: 48px;
+    width: 60px;
     height: 28px;
     text-align: center
 }
@@ -80,7 +100,9 @@
 .previewer .frame{
   margin: 0 auto;
 }
-
+.tabset{
+    padding-top: 10px;
+}
 .tabset .nav-tabs,.tabset-wrap {
     height: 32px;
 }
@@ -150,6 +172,8 @@
     width: 100%;
     border-top: 1px solid #d8d8d8;
     line-height: 41px;
+    padding-top:10px;
+    height: 41px;
 }
 
 .menu:after,

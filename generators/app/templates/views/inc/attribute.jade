@@ -4,12 +4,20 @@ include ./mixins.jade
   .row
     .menu
       .btn-list
-        a.btn(title='查找')
-          span.glyphicon.glyphicon-search
-            |  
-        a.btn(title='保存')
-          span.glyphicon.glyphicon-floppy-disk
-            |  
+        //- a.btn(title='查找')
+        //-   span.glyphicon.glyphicon-search
+        //-     |  
+        //- a.btn(title='保存')
+        //-   span.glyphicon.glyphicon-floppy-disk
+        //-     |  
 
     //- 这里需要显示各种不同的可修改内容，
     //- 需要思考一下
+.container-fluid
+  .row
+    table.table.table-striped
+      tbody(data-bind='foreach:widgetConfig.attributes')
+        tr
+          td(data-bind="text:$data.key")  
+          td
+            pre(data-bind="text:$data.value")
