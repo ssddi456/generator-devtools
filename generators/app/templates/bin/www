@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-process.env.DEBUG = '*,-send';
+process.env.DEBUG = '*,-send,-express:*';
 
 var app = require('../app');
 var debug = require('debug')('templates:server');
@@ -82,7 +82,6 @@ function onError(error) {
 /**
  * Event listener for HTTP server "listening" event.
  */
-var livereload_server_instance = require('./livereload_server_instance');
 function onListening() {
   var addr = server.address();
   var bind = typeof addr === 'string'

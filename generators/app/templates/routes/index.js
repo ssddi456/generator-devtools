@@ -279,9 +279,17 @@ watchr.watch({
     }
 });
 
+//
+// if this is a project manager
+//   should reload when :
+//      source change or compiler change:
+//        rebuild project
+//      dest change
+//        reload previewer
+//
+//
 
-
-var LRServer = require('../bin/livereload_server_instance');
+var LRServer = require('../libs/livereload_server_instance');
 function reload( filepath ){
   debug('reload', filepath);
 
